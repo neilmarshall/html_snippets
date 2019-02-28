@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Website</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Function to dynamically load options for "models_selector" element -->
+    <script>
+        function load_models(models_dict) {
+            var brand = document.getElementById("brands_selector").value;
+            var models = models_dict[brand];
+            var selector = document.getElementById("models_selector");
+            selector.options.length = 0;  // reset items to nothing
+            for (i = 0; i < models.length; i++) {
+                selector.options.add(Option(models[i]));
+            }
+        }
+    </script>
+
+</head>
+
+<body onload="load_models({{ form.modelsJSON }})">
+
+    <div class="container">
+        <h1>Selectors <small>(select brand & model)</small></h1>
+        <select id="brands_selector" onchange="load_models({{ form.modelsJSON }})">
+            {% for brand in form.brands %}
+            <option value={{ brand }}>{{ brand }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <select id="models_selector"></select>
+    </div>
+
+</body>
+</html>
