@@ -8,7 +8,7 @@ function load_brands() {
     var select = document.getElementById("brands");
     var brands = ["Audi", "BMW", "Citroen"];
     brands.forEach(function(brand) {
-        select.options.add(Option(brand));
+        select.options.add(new Option(brand));
     });
     load_models();
 }
@@ -24,6 +24,6 @@ function load_models() {
     var brand = document.getElementById("brands");
     var models = models_by_brand[brand.value];
     models.forEach(function(model) {
-        select.options.add(Option(model));
+        select.options.add(new Option(model));
     });
 }

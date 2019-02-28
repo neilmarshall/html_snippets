@@ -14,7 +14,7 @@
             var selector = document.getElementById("models_selector");
             selector.options.length = 0;  // reset items to nothing
             for (i = 0; i < models.length; i++) {
-                selector.options.add(Option(models[i]));
+                selector.options.add(new Option(models[i]));
             }
         }
     </script>
