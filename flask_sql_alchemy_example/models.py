@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/neilmarshall/Documents/Programming/Data Science/Kaggle/Football Analysis/database.sqlite"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -24,13 +24,14 @@ class Match(db.Model):
         return f"Match(league_id={self.league_id}, season={self.season})"
 
 
-def get_seasons_by_league(session, league):
-    return [season for (season,) in session.query(Match.season).filter(League.id==Match.league_id).filter(League.name==league).all()]
+def get_seasons_by_league(league):
+    return [season for (season,) in db.session.query(Match.season).filter(League.id==Match.league_id).filter(League.name==league).distinct()]
 
 
 class TestLeague(unittest.TestCase):
 
     def setUp(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
         db.create_all()
         db.session.add_all(
             [League(id=1729, name="England Premier League"),
@@ -59,11 +60,11 @@ class TestLeague(unittest.TestCase):
         db.session.commit()
  
     def test_get_seasons_by_league(self):
-        seasons = get_seasons_by_league(db.session, "England Premier League")
+        seasons = get_seasons_by_league("England Premier League")
         self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
-        seasons = get_seasons_by_league(db.session, "France Ligue 1")
+        seasons = get_seasons_by_league("France Ligue 1")
         self.assertEqual(seasons, ["2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
-        seasons = get_seasons_by_league(db.session, "Italy Serie A")
+        seasons = get_seasons_by_league("Italy Serie A")
         self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013"])
  
  
