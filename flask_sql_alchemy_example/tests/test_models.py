@@ -1,36 +1,13 @@
 import unittest
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from app import app, db
+from app.models import League, Match, get_seasons_by_league
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////Users/neilmarshall/Documents/Programming/Data Science/Kaggle/Football Analysis/database.sqlite"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+class TestDBFunctions(unittest.TestCase):
 
-class League(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-
-    def __repr__(self):
-        return f"League(id={self.id}, name={self.name})"
-
-class Match(db.Model):
-
-    league_id = db.Column(db.Integer, db.ForeignKey(League.id), primary_key=True, )
-    season = db.Column(db.Text, primary_key=True)
-
-    def __repr__(self):
-        return f"Match(league_id={self.league_id}, season={self.season})"
-
-
-def get_seasons_by_league(league):
-    return [season for (season,) in db.session.query(Match.season).filter(League.id==Match.league_id).filter(League.name==league).distinct()]
-
-
-class TestLeague(unittest.TestCase):
+    app_config = None
 
     def setUp(self):
+        self.app_config = app.config['SQLALCHEMY_DATABASE_URI']
         app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
         db.create_all()
         db.session.add_all(
@@ -53,11 +30,14 @@ class TestLeague(unittest.TestCase):
               Match(league_id=4769, season="2014/2015"),
               Match(league_id=4769, season="2015/2016"),
               Match(league_id=10257, season="2008/2009"),
-              Match(league_id=10257, season="2009/2010"),
               Match(league_id=10257, season="2010/2011"),
+              Match(league_id=10257, season="2009/2010"),  # note order has been deliberately switched to check function returns sorted list
               Match(league_id=10257, season="2011/2012"),
               Match(league_id=10257, season="2012/2013")])
         db.session.commit()
+
+    def tearDown(self):
+        app.config['SQLALCHEMY_DATABASE_URI'] = self.app_config
  
     def test_get_seasons_by_league(self):
         seasons = get_seasons_by_league("England Premier League")
