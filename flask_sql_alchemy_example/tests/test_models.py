@@ -9,6 +9,7 @@ class TestDBFunctions(unittest.TestCase):
     def setUp(self):
         self.app_config = app.config['SQLALCHEMY_DATABASE_URI']
         app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
+        db.session.execute('PRAGMA foreign_keys = ON;')
         db.create_all()
         db.session.add_all(
             [League(id=1729, name="England Premier League"),
