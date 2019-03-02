@@ -32,8 +32,9 @@
 
     <div class="container">
         <h1>Selectors <small>(select league & season)</small></h1>
+        <div class="form-group">
         <form>
-            <select name="leagues_selector" id="leagues_selector" onchange="load_seasons({{ seasons }})">
+            <select name="leagues_selector" id="leagues_selector" onchange="load_seasons({{ seasons }})" class="form-control">
                 {% for league in leagues %}
                     {% if league == selected_league %}
                     <option value="{{ league }}" selected>{{ league }}</option>
@@ -43,13 +44,14 @@
                 {% endfor %}
             </select>
             <br>
-            <select name="seasons_selector" id="seasons_selector"></select>
+            <select name="seasons_selector" id="seasons_selector" class="form-control"></select>
             <br>
-            <input type="submit" value="Show League Table" formmethod="post">
+            <input type="submit" value="Show League Table" formmethod="post" class="btn-primary">
         </form>
+        </div>
 
         {% if results %}
-            <table>
+            <table class="table table-hover table-condensed">
                 <tr><th colspan=3>{{ selected_league }} - {{ selected_season }}</th></tr>
                 <tr>
                     <th>Team</th>
