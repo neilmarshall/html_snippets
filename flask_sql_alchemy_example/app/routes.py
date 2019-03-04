@@ -1,10 +1,11 @@
 import json
-from flask import render_template, request
-from app import app
+from flask import Blueprint, render_template, request
 import app.models as models
 
-@app.route('/')
-@app.route('/index')
+homepage = Blueprint('homepage', __name__)
+
+@homepage.route('/')
+@homepage.route('/index')
 def index():
     leagues = models.get_all_leagues()
     seasons = json.dumps({league: models.get_seasons_by_league(league) for league in leagues})

@@ -1,8 +1,10 @@
 from collections import namedtuple
 
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import aliased, relationship
+
+db = SQLAlchemy()
 
 # define namedtuples used
 MatchResult = namedtuple('MatchResult', ['date', 'home_team', 'home_team_goals', 'away_team', 'away_team_goals'])
