@@ -1,64 +1,71 @@
 import unittest
-from app import app, db
-from app.models import League, Match, Team, MatchResult, LeagueResult, ResultsAggregator, get_all_leagues, get_matches, get_seasons_by_league
+from app import create_app
+from app.models import db, League, Match, Team, MatchResult, LeagueResult, ResultsAggregator, get_all_leagues, get_matches, get_seasons_by_league
+
+class TestConfig(object):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class LocalDBConfig(object):
+    SQLALCHEMY_DATABASE_URI = "sqlite:////Users/neilmarshall/Documents/Programming/HTML/html_snippets/flask_sql_alchemy_example/tests/test_db.sqlite"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class TestGetSeasonsAndLeagues(unittest.TestCase):
 
-    app_config = None
-
     def setUp(self):
+
         # set up in-memory database
-        self.app_config = app.config['SQLALCHEMY_DATABASE_URI']
-        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
-        db.session.execute('PRAGMA foreign_keys = ON;')
-        db.create_all()
+        self.app = create_app(TestConfig)
 
-        # add leagues
-        db.session.add_all(
-            [League(id=1729, name="England Premier League"),
-             League(id=4769, name="France Ligue 1"),
-             League(id=10257, name="Italy Serie A"),
-             League(id=8257, name="Italy Serie A"),
-             League(id=17809, name="Germany 1. Bundesliga")])
+        with self.app.app_context():
 
-        # add matches
-        db.session.add_all(
-             [Match(league_id=1729, season="2008/2009"),
-              Match(league_id=1729, season="2009/2010"),
-              Match(league_id=1729, season="2010/2011"),
-              Match(league_id=1729, season="2011/2012"),
-              Match(league_id=1729, season="2012/2013"),
-              Match(league_id=1729, season="2013/2014"),
-              Match(league_id=1729, season="2014/2015"),
-              Match(league_id=1729, season="2015/2016"),
-              Match(league_id=4769, season="2010/2011"),
-              Match(league_id=4769, season="2011/2012"),
-              Match(league_id=4769, season="2012/2013"),
-              Match(league_id=4769, season="2013/2014"),
-              Match(league_id=4769, season="2014/2015"),
-              Match(league_id=4769, season="2015/2016"),
-              Match(league_id=10257, season="2008/2009"),
-              Match(league_id=10257, season="2010/2011"),
-              Match(league_id=10257, season="2009/2010"),  # note order has been deliberately switched to check function returns sorted list
-              Match(league_id=10257, season="2011/2012"),
-              Match(league_id=10257, season="2012/2013")])
-        db.session.commit()
+            db.session.execute('PRAGMA foreign_keys = ON;')
+            db.create_all()
 
-    def tearDown(self):
-        db.drop_all()
-        app.config['SQLALCHEMY_DATABASE_URI'] = self.app_config
- 
+            # add leagues
+            db.session.add_all(
+                [League(id=1729, name="England Premier League"),
+                 League(id=4769, name="France Ligue 1"),
+                 League(id=10257, name="Italy Serie A"),
+                 League(id=8257, name="Italy Serie A"),
+                 League(id=17809, name="Germany 1. Bundesliga")])
+
+            # add matches
+            db.session.add_all(
+                 [Match(league_id=1729, season="2008/2009"),
+                  Match(league_id=1729, season="2009/2010"),
+                  Match(league_id=1729, season="2010/2011"),
+                  Match(league_id=1729, season="2011/2012"),
+                  Match(league_id=1729, season="2012/2013"),
+                  Match(league_id=1729, season="2013/2014"),
+                  Match(league_id=1729, season="2014/2015"),
+                  Match(league_id=1729, season="2015/2016"),
+                  Match(league_id=4769, season="2010/2011"),
+                  Match(league_id=4769, season="2011/2012"),
+                  Match(league_id=4769, season="2012/2013"),
+                  Match(league_id=4769, season="2013/2014"),
+                  Match(league_id=4769, season="2014/2015"),
+                  Match(league_id=4769, season="2015/2016"),
+                  Match(league_id=10257, season="2008/2009"),
+                  Match(league_id=10257, season="2010/2011"),
+                  Match(league_id=10257, season="2009/2010"),  # note order has been deliberately switched to check function returns sorted list
+                  Match(league_id=10257, season="2011/2012"),
+                  Match(league_id=10257, season="2012/2013")])
+            db.session.commit()
+
     def test_get_seasons_by_league(self):
-        seasons = get_seasons_by_league("England Premier League")
-        self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
-        seasons = get_seasons_by_league("France Ligue 1")
-        self.assertEqual(seasons, ["2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
-        seasons = get_seasons_by_league("Italy Serie A")
-        self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013"])
+        with self.app.app_context():
+            seasons = get_seasons_by_league("England Premier League")
+            self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
+            seasons = get_seasons_by_league("France Ligue 1")
+            self.assertEqual(seasons, ["2010/2011", "2011/2012", "2012/2013", "2013/2014", "2014/2015", "2015/2016"])
+            seasons = get_seasons_by_league("Italy Serie A")
+            self.assertEqual(seasons, ["2008/2009", "2009/2010", "2010/2011", "2011/2012", "2012/2013"])
 
     def test_get_all_leagues(self):
-        countries = get_all_leagues()
-        self.assertEqual(countries, ["England Premier League", "France Ligue 1", "Germany 1. Bundesliga", "Italy Serie A"])
+        with self.app.app_context():
+            countries = get_all_leagues()
+            self.assertEqual(countries, ["England Premier League", "France Ligue 1", "Germany 1. Bundesliga", "Italy Serie A"])
 
 
 def construct_leagues():
@@ -110,80 +117,98 @@ def construct_matches():
 
 class TestGetMatches(unittest.TestCase):
 
-    app_config = None
-
     def setUp(self):
+
         # set up in-memory database
-        self.app_config = app.config['SQLALCHEMY_DATABASE_URI']
-        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
-        db.session.execute('PRAGMA foreign_keys = ON;')
-        db.create_all()
+        self.app = create_app(TestConfig)
 
-        # add leagues
-        construct_leagues()
+        with self.app.app_context():
 
-        # add teams
-        construct_teams()
+            db.session.execute('PRAGMA foreign_keys = ON;')
+            db.create_all()
 
-        # add matches
-        construct_matches()
+            # add leagues
+            construct_leagues()
 
-    def tearDown(self):
-        db.drop_all()
-        app.config['SQLALCHEMY_DATABASE_URI'] = self.app_config
- 
+            # add teams
+            construct_teams()
+
+            # add matches
+            construct_matches()
+
     def test_get_matches(self):
-        actual_results = get_matches("England Premier League", "2014/2015")
-        expected_results = [MatchResult(date="2014-08-16 00:00:00", home_team="Arsenal", home_team_goals=2, away_team="Crystal Palace", away_team_goals=1),
-                            MatchResult(date="2014-08-16 00:00:00", home_team="Leicester", home_team_goals=2, away_team="Everton", away_team_goals=2),
-                            MatchResult(date="2014-08-16 00:00:00", home_team="Manchester United", home_team_goals=1, away_team="Swansea", away_team_goals=2),
-                            MatchResult(date="2014-08-16 00:00:00", home_team="Queens Park Rangers", home_team_goals=0, away_team="Hull", away_team_goals=1),
-                            MatchResult(date="2014-08-16 00:00:00", home_team="Stoke", home_team_goals=0, away_team="Aston Villa", away_team_goals=1),
-                            MatchResult(date="2014-08-16 00:00:00", home_team="West Bromwich Albion", home_team_goals=2, away_team="Sunderland", away_team_goals=2)]
-        self.assertEqual(actual_results, expected_results)
+        with self.app.app_context():
+            actual_results = get_matches("England Premier League", "2014/2015")
+            expected_results = [MatchResult(date="2014-08-16 00:00:00", home_team="Arsenal", home_team_goals=2, away_team="Crystal Palace", away_team_goals=1),
+                                MatchResult(date="2014-08-16 00:00:00", home_team="Leicester", home_team_goals=2, away_team="Everton", away_team_goals=2),
+                                MatchResult(date="2014-08-16 00:00:00", home_team="Manchester United", home_team_goals=1, away_team="Swansea", away_team_goals=2),
+                                MatchResult(date="2014-08-16 00:00:00", home_team="Queens Park Rangers", home_team_goals=0, away_team="Hull", away_team_goals=1),
+                                MatchResult(date="2014-08-16 00:00:00", home_team="Stoke", home_team_goals=0, away_team="Aston Villa", away_team_goals=1),
+                                MatchResult(date="2014-08-16 00:00:00", home_team="West Bromwich Albion", home_team_goals=2, away_team="Sunderland", away_team_goals=2)]
+            self.assertEqual(actual_results, expected_results)
  
 
 class TestResultsAggregator(unittest.TestCase):
 
-    app_config = None
-
     def setUp(self):
+
         # set up in-memory database
-        self.app_config = app.config['SQLALCHEMY_DATABASE_URI']
-        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
-        db.session.execute('PRAGMA foreign_keys = ON;')
-        db.create_all()
+        self.app = create_app(TestConfig)
 
-        # add leagues
-        construct_leagues()
+        with self.app.app_context():
 
-        # add teams
-        construct_teams()
+            db.session.execute('PRAGMA foreign_keys = ON;')
+            db.create_all()
 
-        # add matches
-        construct_matches()
+            # add leagues
+            construct_leagues()
 
-    def tearDown(self):
-        db.drop_all()
-        app.config['SQLALCHEMY_DATABASE_URI'] = self.app_config
- 
+            # add teams
+            construct_teams()
+
+            # add matches
+            construct_matches()
+
     def test_results_aggregator(self):
-        match_results = get_matches("England Premier League", "2014/2015")
-        aggregator = ResultsAggregator(match_results)
-        actual_results = [league_result for league_result in aggregator]
-        expected_results = [LeagueResult(team="Arsenal", points=3, goal_difference=1),
-                            LeagueResult(team="Aston Villa", points=3, goal_difference=1),
-                            LeagueResult(team="Hull", points=3, goal_difference=1),
-                            LeagueResult(team="Swansea", points=3, goal_difference=1),
-                            LeagueResult(team="Everton", points=1, goal_difference=0),
-                            LeagueResult(team="Leicester", points=1, goal_difference=0),
-                            LeagueResult(team="Sunderland", points=1, goal_difference=0),
-                            LeagueResult(team="West Bromwich Albion", points=1, goal_difference=0),
-                            LeagueResult(team="Crystal Palace", points=0, goal_difference=-1),
+        with self.app.app_context():
+            match_results = get_matches("England Premier League", "2014/2015")
+            aggregator = ResultsAggregator(match_results)
+            actual_results = [league_result for league_result in aggregator]
+            expected_results = [LeagueResult(team="Arsenal", points=3, goal_difference=1),
+                                LeagueResult(team="Aston Villa", points=3, goal_difference=1),
+                                LeagueResult(team="Hull", points=3, goal_difference=1),
+                                LeagueResult(team="Swansea", points=3, goal_difference=1),
+                                LeagueResult(team="Everton", points=1, goal_difference=0),
+                                LeagueResult(team="Leicester", points=1, goal_difference=0),
+                                LeagueResult(team="Sunderland", points=1, goal_difference=0),
+                                LeagueResult(team="West Bromwich Albion", points=1, goal_difference=0),
+                                LeagueResult(team="Crystal Palace", points=0, goal_difference=-1),
                             LeagueResult(team="Manchester United", points=0, goal_difference=-1),
                             LeagueResult(team="Queens Park Rangers", points=0, goal_difference=-1),
                             LeagueResult(team="Stoke", points=0, goal_difference=-1)]
         self.assertEqual(actual_results, expected_results)
+
+
+class TestVersusLocalDB(unittest.TestCase):
+
+    def setUp(self):
+
+        # connect to local database
+        self.app = create_app(LocalDBConfig)
+
+    def test_local_db(self):
+
+        with self.app.app_context():
+            results = get_matches("England Premier League", "2014/2015")
+            self.assertEqual(len(results), 380)
+
+            aggregator = list(ResultsAggregator(results))
+
+            expected_league_leader = LeagueResult(team="Chelsea", points=87, goal_difference=41)
+            self.assertEqual(expected_league_leader, aggregator[0])
+
+            expected_league_trailer = LeagueResult(team="Queens Park Rangers", points=30, goal_difference=-31)
+            self.assertEqual(expected_league_trailer, aggregator[-1])
 
 
 if __name__ == '__main__':
