@@ -149,7 +149,7 @@ class TestGetMatches(unittest.TestCase):
             self.assertEqual(actual_results, expected_results)
  
 
-class TestResultsAggregator(unittest.TestCase):
+class TestResultsAggregatorVersusInMemoryDB(unittest.TestCase):
 
     def setUp(self):
 
@@ -170,46 +170,71 @@ class TestResultsAggregator(unittest.TestCase):
             # add matches
             construct_matches()
 
-    def test_results_aggregator(self):
+    def test_results_aggregator_aggregates_one_round_of_fixtures_correctly(self):
         with self.app.app_context():
             match_results = get_matches("England Premier League", "2014/2015")
             aggregator = ResultsAggregator(match_results)
-            actual_results = [league_result for league_result in aggregator]
-            expected_results = [LeagueResult(team="Arsenal", points=3, goal_difference=1),
-                                LeagueResult(team="Aston Villa", points=3, goal_difference=1),
-                                LeagueResult(team="Hull", points=3, goal_difference=1),
-                                LeagueResult(team="Swansea", points=3, goal_difference=1),
-                                LeagueResult(team="Everton", points=1, goal_difference=0),
-                                LeagueResult(team="Leicester", points=1, goal_difference=0),
-                                LeagueResult(team="Sunderland", points=1, goal_difference=0),
-                                LeagueResult(team="West Bromwich Albion", points=1, goal_difference=0),
-                                LeagueResult(team="Crystal Palace", points=0, goal_difference=-1),
-                            LeagueResult(team="Manchester United", points=0, goal_difference=-1),
-                            LeagueResult(team="Queens Park Rangers", points=0, goal_difference=-1),
-                            LeagueResult(team="Stoke", points=0, goal_difference=-1)]
-        self.assertEqual(actual_results, expected_results)
+            expected_results = [LeagueResult(team="Arsenal", games=1, points=3, goal_difference=1),
+                                LeagueResult(team="Aston Villa", games=1, points=3, goal_difference=1),
+                                LeagueResult(team="Hull", games=1, points=3, goal_difference=1),
+                                LeagueResult(team="Swansea", games=1, points=3, goal_difference=1),
+                                LeagueResult(team="Everton", games=1, points=1, goal_difference=0),
+                                LeagueResult(team="Leicester", games=1, points=1, goal_difference=0),
+                                LeagueResult(team="Sunderland", games=1, points=1, goal_difference=0),
+                                LeagueResult(team="West Bromwich Albion", games=1, points=1, goal_difference=0),
+                                LeagueResult(team="Crystal Palace", games=1, points=0, goal_difference=-1),
+                                LeagueResult(team="Manchester United", games=1, points=0, goal_difference=-1),
+                                LeagueResult(team="Queens Park Rangers", games=1, points=0, goal_difference=-1),
+                                LeagueResult(team="Stoke", games=1, points=0, goal_difference=-1)]
+            self.assertEqual(aggregator.get_final_league_table(), expected_results)
 
 
-class TestVersusLocalDB(unittest.TestCase):
+class TestResultsAggregatorVersusLocalDB(unittest.TestCase):
 
     def setUp(self):
 
         # connect to local database
         self.app = create_app(LocalDBConfig)
 
-    def test_local_db(self):
+    def test_aggregator_returns_correct_number_of_matches(self):
 
         with self.app.app_context():
             results = get_matches("England Premier League", "2014/2015")
             self.assertEqual(len(results), 380)
 
-            aggregator = list(ResultsAggregator(results))
+    def test_aggregator_aggregates_final_league_table_correctly(self):
 
-            expected_league_leader = LeagueResult(team="Chelsea", points=87, goal_difference=41)
-            self.assertEqual(expected_league_leader, aggregator[0])
+        with self.app.app_context():
+            results = get_matches("England Premier League", "2014/2015")
+            aggregator = ResultsAggregator(results)
+            final_league_table = aggregator.get_final_league_table()
 
-            expected_league_trailer = LeagueResult(team="Queens Park Rangers", points=30, goal_difference=-31)
-            self.assertEqual(expected_league_trailer, aggregator[-1])
+            expected_league_leader = LeagueResult(team="Chelsea", games=38, points=87, goal_difference=41)
+            self.assertEqual(final_league_table[0], expected_league_leader)
+
+            expected_league_trailer = LeagueResult(team="Queens Park Rangers", games=38, points=30, goal_difference=-31)
+            self.assertEqual(final_league_table[-1], expected_league_trailer)
+
+    def test_aggregator_aggregates_midpoint_league_table_correctly(self):
+
+        with self.app.app_context():
+            results = get_matches("England Premier League", "2014/2015")
+            aggregator = ResultsAggregator(results)
+            midpoint_league_table = aggregator.get_league_table_at_matchday(18)
+
+            expected_league_leader = LeagueResult(team="Chelsea", games=18, points=45, goal_difference=27)
+            self.assertEqual(midpoint_league_table[0], expected_league_leader)
+
+            expected_league_trailer = LeagueResult(team="Leicester", games=18, points=10, goal_difference=-15)
+            self.assertEqual(midpoint_league_table[-1], expected_league_trailer)
+
+    def test_aggregator_errors_on_invalid_matchday(self):
+
+        with self.app.app_context():
+            results = get_matches("England Premier League", "2014/2015")
+            aggregator = ResultsAggregator(results)
+            self.assertRaises(ValueError, aggregator.get_league_table_at_matchday, -1)
+            self.assertRaises(ValueError, aggregator.get_league_table_at_matchday, 39)
 
 
 if __name__ == '__main__':
