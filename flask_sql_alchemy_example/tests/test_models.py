@@ -1,3 +1,4 @@
+import os
 import unittest
 from app import create_app
 from app.models import db, League, Match, Team, MatchResult, LeagueResult, ResultsAggregator, get_all_leagues, get_matches, get_seasons_by_league
@@ -7,7 +8,7 @@ class TestConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDBConfig(object):
-    SQLALCHEMY_DATABASE_URI = "sqlite:////Users/neilmarshall/Documents/Programming/HTML/html_snippets/flask_sql_alchemy_example/tests/test_db.sqlite"
+    SQLALCHEMY_DATABASE_URI = r"sqlite:///" + os.getcwd() + r"\tests\test_db.sqlite"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class TestGetSeasonsAndLeagues(unittest.TestCase):
