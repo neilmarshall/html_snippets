@@ -87,6 +87,7 @@ class ResultsAggregator():
 
     def __init__(self, match_results):
         self._number_of_teams = len({match.home_team for match in match_results} | {match.away_team for match in match_results})
+        #import pdb; pdb.set_trace()
         self._number_of_matchdays = 2 * len(match_results) // self._number_of_teams
         self._league_results = self._process_results(match_results)
 
@@ -132,3 +133,7 @@ class ResultsAggregator():
 
     def get_final_league_table(self):
         return self.get_league_table_at_matchday(self._number_of_matchdays)
+
+    @property
+    def NumberOfMatchdays(self):
+        return self._number_of_matchdays

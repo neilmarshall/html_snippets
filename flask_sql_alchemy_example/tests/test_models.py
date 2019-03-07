@@ -202,6 +202,12 @@ class TestResultsAggregatorVersusLocalDB(unittest.TestCase):
             results = get_matches("England Premier League", "2014/2015")
             self.assertEqual(len(results), 380)
 
+    def test_aggregator_returns_correct_number_of_matchdays(self):
+
+        with self.app.app_context():
+            aggregator = ResultsAggregator(get_matches("England Premier League", "2014/2015"))
+            self.assertEqual(aggregator.NumberOfMatchdays, 38)
+
     def test_aggregator_aggregates_final_league_table_correctly(self):
 
         with self.app.app_context():
