@@ -8,7 +8,7 @@ class TestConfig(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDBConfig(object):
-    SQLALCHEMY_DATABASE_URI = r"sqlite:///" + os.getcwd() + r"\tests\test_db.sqlite"
+    SQLALCHEMY_DATABASE_URI = r"sqlite:///" + os.getcwd() + r"/tests/test_db.sqlite"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class TestGetSeasonsAndLeagues(unittest.TestCase):
