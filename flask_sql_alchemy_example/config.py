@@ -1,3 +1,5 @@
+import os
+
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = "sqlite:////Users/neilmarshall/Documents/Programming/Data Science/Kaggle/Football Analysis/database.sqlite"
+    SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
