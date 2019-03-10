@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    <a class="navbar-brand" href="logout">Logout</a>
+{% endblock %}
+
+{% block body %}
+    <h1>Welcome {{ current_user.username }}</h1>
+    <h2>Your hair colour is {{ current_user.hair_colour }}</h2>
+    <h2>Your eye colour is {{ current_user.eye_colour }}</h2>
+{% endblock %}
