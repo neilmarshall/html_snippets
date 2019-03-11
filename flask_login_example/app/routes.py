@@ -41,7 +41,7 @@ def login_page():
                         sex=registration_form.Sex.data,
                         eye_colour=registration_form.EyeColour.data,
                         hair_colour=registration_form.HairColour.data,
-                        is_alive=True if registration_form.Alive.data == 'Living Characters' else False,
+                        is_alive={'living': True, 'deceased': False}[registration_form.Alive.data],
                         appearances=registration_form.Appearances.data)
             user.set_password(registration_form.RegistrationPassword.data)
             db.session.add(user)
