@@ -14,8 +14,6 @@ class User(UserMixin, db.Model):
     eye_colour = db.Column(db.Text)
     hair_colour = db.Column(db.Text)
     is_alive = db.Column(db.Text)
-    hair_colour = db.Column(db.Text)
-    is_alive = db.Column(db.Boolean)
     appearances = db.Column(db.Integer)
 
     def __repr__(self):

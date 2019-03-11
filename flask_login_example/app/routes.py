@@ -24,7 +24,7 @@ def login_page():
     if login_form.validate_on_submit():
         user = User.query.filter_by(username=login_form.LoginUsername.data).first()
         if user is None or not user.check_password(login_form.LoginPassword.data):
-            flash('Username not recognise or invalid password provided - please try again')
+            flash('Username not recognised or invalid password provided - please try again')
             return redirect(url_for('login_bp.login_page'))
         else:
             login_user(user)
