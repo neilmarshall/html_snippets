@@ -41,7 +41,7 @@ class TestLoginPage(unittest.TestCase):
                 'Sex': 'agender',
                 'EyeColour': 'amber',
                 'HairColour': 'auburn',
-                'Alive': 'Living Characters',
+                'Alive': 'deceased',
                 'Appearances': '100'}
 
     def setUp(self):
@@ -147,7 +147,5 @@ class TestLoginPage(unittest.TestCase):
     def test_registering_with_correct_details_creates_additional_user(self):
         self.assertEqual(User.query.count(), 1)
         registration_parameters = TestLoginPage.create_registration_parameters()
-        # self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        response = self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        print(response.data)
+        self.test_client.post('/', data=registration_parameters, follow_redirects=True)
         self.assertEqual(User.query.count(), 2)
