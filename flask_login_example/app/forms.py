@@ -13,7 +13,7 @@ class RegistrationForm(FlaskForm):
     RegistrationUsername = StringField(label='Username', validators=[DataRequired()])
     RegistrationPassword = PasswordField(label='Password', validators=[DataRequired()])
     RegistrationPassword2 = PasswordField(label='Confirm password', validators=[DataRequired(),
-        EqualTo('RegistrationPassword', message="Passwords don't match")])
+        EqualTo('RegistrationPassword', message="Passwords do not match")])
     Identity = SelectField(label="Identity", choices=[('secret', 'Secret Identity'), ('public', 'Public Identity')])
     Alignment = SelectField(label="Alignment", choices=[
         ('None', 'None'), ('bad', 'Bad Characters'), ('good', 'Good Characters'),
