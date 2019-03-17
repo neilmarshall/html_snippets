@@ -14,7 +14,9 @@ class RegistrationForm(FlaskForm):
     RegistrationPassword = PasswordField(label='Password', validators=[DataRequired()])
     RegistrationPassword2 = PasswordField(label='Confirm password', validators=[DataRequired(),
         EqualTo('RegistrationPassword', message="Passwords do not match")])
-    Identity = SelectField(label="Identity", choices=[('secret', 'Secret Identity'), ('public', 'Public Identity')])
+    Identity = SelectField(label="Identity", choices=[
+        ('None', 'None'), ('secret', 'Secret Identity'), ('public', 'Public Identity'), ('unknown', 'Identity Unknown'),
+        ('known', 'Known to Authorities Identity'), ('no_dual', 'No Dual Identity')])
     Alignment = SelectField(label="Alignment", choices=[
         ('None', 'None'), ('bad', 'Bad Characters'), ('good', 'Good Characters'),
         ('neutral', 'Neutral Characters'), ('reformed', 'Reformed Criminals')])
@@ -45,7 +47,7 @@ class RegistrationForm(FlaskForm):
         ('variable', 'Variable Hair'), ('violet', 'Violet Hair'), ('white', 'White Hair'), ('yellow', 'Yellow Hair')])        
     Alive = SelectField(label="Alive", choices=[
         ('deceased', 'Deceased Characters'), ('living', 'Living Characters')])
-    Appearances = IntegerField(label="Appearances", validators=[NumberRange(min=1, max=9999)])
+    Appearances = IntegerField(label="Appearances", validators=[NumberRange(min=0, max=9999)])
     Submit = SubmitField(label="Register")
 
     def validate_RegistrationUsername(self, username):

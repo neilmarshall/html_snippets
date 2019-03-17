@@ -49,7 +49,7 @@ def login_page():
             login_user(user)
             return redirect(url_for('login_bp.index'))
         else:
-            return render_template('login.html', login_form=login_form, registration_form=registration_form, registration_active=True)
+            return render_template('login.html', login_form=login_form, registration_form=registration_form, registration_active=True), 205
 
     # else we have landed on the login page via a GET request...
     return render_template('login.html', login_form=login_form, registration_form=registration_form, registration_active=False)

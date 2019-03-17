@@ -115,26 +115,26 @@ class TestLoginPage(unittest.TestCase):
         registration_parameters = TestLoginPage.create_registration_parameters()
         registration_parameters['RegistrationUsername'] = self.user1.username
         response = self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 205)
         self.assertTrue(b'Please provide a unique username' in response.data)
 
     def test_registering_with_mismatched_passwords_does_not_validate(self):
         registration_parameters = TestLoginPage.create_registration_parameters()
         registration_parameters['RegistrationPassword2'] = 'mismatched_password'
         response = self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 205)
         self.assertTrue(b"Passwords do not match" in response.data)
 
     def test_registering_with_invalid_appearances_argument_does_not_validate(self):
         registration_parameters = TestLoginPage.create_registration_parameters()
         registration_parameters['Appearances'] = -1
         response = self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(b"Number must be between 1 and 9999" in response.data)
+        self.assertEqual(response.status_code, 205)
+        self.assertTrue(b"Number must be between 0 and 9999" in response.data)
         registration_parameters['Appearances'] = 10000
         response = self.test_client.post('/', data=registration_parameters, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(b"Number must be between 1 and 9999" in response.data)
+        self.assertEqual(response.status_code, 205)
+        self.assertTrue(b"Number must be between 0 and 9999" in response.data)
 
     def test_registering_with_correct_details_redirects_correctly(self):
         registration_parameters = TestLoginPage.create_registration_parameters()
