@@ -1,0 +1,14 @@
+CREATE TABLE user (
+    user_id INTEGER NOT NULL AUTO_INCREMENT UNIQUE,
+    username varchar(255) NOT NULL UNIQUE,
+    password_hash varchar(255) NOT NULL UNIQUE,
+    identity varchar(255),
+    alignment varchar(255),
+    gender varchar(255),
+    sex varchar(255),
+    eye_colour varchar(255),
+    hair_colour varchar(255),
+    is_alive BOOLEAN,
+    appearances INTEGER,
+    PRIMARY KEY (user_id)
+);
