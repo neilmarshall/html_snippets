@@ -1,3 +1,16 @@
 body {
     /* background-color: black; */
 }
+
+.col {
+    border: solid steelblue 1px;
+    margin: 1px;
+}
+
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    color: white;
+    padding: 3px;
+    margin: 1px;
+}

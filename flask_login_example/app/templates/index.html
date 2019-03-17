@@ -5,7 +5,26 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Welcome {{ current_user.username }}</h1>
-    <h2>Your hair colour is {{ current_user.hair_colour }}</h2>
-    <h2>Your eye colour is {{ current_user.eye_colour }}</h2>
+    <div class="row">
+        <div class="col">
+            <p>Identity vs. Alive status (scatter chart)</p>
+        </div>
+        <div class="col">
+            <p>Appearances (scatter chart)</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Most common eye colour (bar chart)</p>
+            <div id="eye_colour_chart" class="chart">
+                <script>$(build_chart({{ eye_data|safe }}, "#eye_colour_chart"))</script>
+            </div>
+        </div>
+        <div class="col">
+            <p>Most common hair colour (bar chart)</p>
+            <div id="hair_colour_chart" class="chart">
+                <script>$(build_chart({{ hair_data|safe }}, "#hair_colour_chart"))</script>
+            </div>
+        </div>
+    </div>
 {% endblock %}
