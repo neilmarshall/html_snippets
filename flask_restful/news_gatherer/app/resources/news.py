@@ -33,6 +33,8 @@ class Register(Resource):
         if 'username' not in data or 'password' not in data:
             abort(404)  # username and/or password not provided
         username, password = data['username'], data['password']
+        if not username or not password:
+            abort(404)  # blank username and/or password
         if User.query.filter(User.username == username).first() is not None:
             abort(404)  # non-unique username
         user = User(username=username)
@@ -59,7 +61,6 @@ class GetNews(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('source', choices=['bbc', 'guardian'])
         args = parser.parse_args()
-        print(args)
         if args['source'] == 'bbc':
             response = requests.get('https://www.bbc.co.uk/news')
             if response.status_code == 200:
