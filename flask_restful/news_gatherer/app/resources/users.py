@@ -15,6 +15,8 @@ class User(db.Model):
     token = db.Column(db.String(64))
     token_expiry = db.Column(db.DateTime)
 
+    requests = db.relationship('NewsRequest', lazy=True, backref='user')
+
     def __repr__(self):
         return f"User(id={self.id}, username={self.username}, password_hash={self.password_hash})"
 
@@ -28,8 +30,6 @@ class User(db.Model):
         self.token = token_urlsafe()
         self.token_expiry = datetime.utcnow() + timedelta(seconds=expires_in)
 
-    requests = db.relationship('NewsRequest', lazy=True, backref='user')
-
 
 class NewsSource(db.Model):
 
@@ -40,6 +40,9 @@ class NewsSource(db.Model):
 
     requests = db.relationship('NewsRequest', lazy=True, backref='source')
 
+    def __repr__(self):
+        return f"NewsSource(source_id={self.source_id}, source_name={self.source_name})"
+
 
 class NewsRequest(db.Model):
 
@@ -49,3 +52,7 @@ class NewsRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     news_source = db.Column(db.Integer, db.ForeignKey('news_sources.source_id'), nullable=False)
     request_date = db.Column(db.DateTime, nullable=False)
+
+    def __repr__(self):
+        return (f"NewsRequest(request_id={self.request_id}, user_id={self.user_id}, "
+                f"news_source={self.news_source}, request_date={self.request_date})")

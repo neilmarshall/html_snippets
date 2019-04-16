@@ -1,14 +1,14 @@
 from datetime import datetime
 
 from bs4 import BeautifulSoup
-from flask import abort, request
+from flask import abort, g, request
 from flask.json import jsonify
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource, reqparse
 import requests
 
 from app import db
-from app.resources.users import User
+from app.resources.users import NewsRequest, NewsSource, User
 
 httpauth = HTTPBasicAuth()
 tokenauth = HTTPTokenAuth()
@@ -24,6 +24,7 @@ def verify_token(token):
     user = User.query.filter_by(token=token).first()
     if user is None or user.token_expiry < datetime.utcnow():
         return False
+    g.current_user = user  # set current user on global object
     return True
 
 
@@ -58,9 +59,14 @@ class GetToken(Resource):
 class GetNews(Resource):
     @tokenauth.login_required
     def post(self):
+        user = g.get('current_user')
         parser = reqparse.RequestParser()
         parser.add_argument('source', choices=['bbc', 'guardian'])
         args = parser.parse_args()
+        news_source = NewsSource.query.filter(NewsSource.source_name.like(args['source'])).first()
+        news_request = NewsRequest(user_id=user.id, news_source=news_source.source_id, request_date=datetime.now())
+        db.session.add(news_request)
+        db.session.commit()
         if args['source'] == 'bbc':
             response = requests.get('https://www.bbc.co.uk/news')
             if response.status_code == 200:
