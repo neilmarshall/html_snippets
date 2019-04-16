@@ -27,3 +27,11 @@ class User(db.Model):
     def set_token(self, expires_in=600):
         self.token = token_urlsafe()
         self.token_expiry = datetime.utcnow() + timedelta(seconds=expires_in)
+
+
+class NewsSource(db.Model):
+
+    __tablename__ = 'news_sources'
+
+    source_id = db.Column(db.Integer, primary_key=True)
+    source_name = db.Column(db.String(64), nullable=False)
