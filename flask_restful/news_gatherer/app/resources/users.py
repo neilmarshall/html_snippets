@@ -28,6 +28,8 @@ class User(db.Model):
         self.token = token_urlsafe()
         self.token_expiry = datetime.utcnow() + timedelta(seconds=expires_in)
 
+    requests = db.relationship('NewsRequest', lazy=True, backref='user')
+
 
 class NewsSource(db.Model):
 
@@ -35,3 +37,15 @@ class NewsSource(db.Model):
 
     source_id = db.Column(db.Integer, primary_key=True)
     source_name = db.Column(db.String(64), nullable=False)
+
+    requests = db.relationship('NewsRequest', lazy=True, backref='source')
+
+
+class NewsRequest(db.Model):
+
+    __tablename__ = 'news_requests'
+
+    request_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    news_source = db.Column(db.Integer, db.ForeignKey('news_sources.source_id'), nullable=False)
+    request_date = db.Column(db.DateTime, nullable=False)
