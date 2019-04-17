@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.resources.users import NewsRequest, NewsSource, User
+from app.resources.models import NewsRequest, NewsSource, User
 from config import Config
 
 app = create_app(Config)
