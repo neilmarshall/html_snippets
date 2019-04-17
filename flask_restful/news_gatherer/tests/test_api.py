@@ -3,7 +3,7 @@ import unittest
 import unittest.mock as mock
 
 from app import create_app, db
-from app.resources.users import NewsSource, User
+from app.resources.users import NewsRequest, NewsSource, User
 
 class TestConfig():
     SECRET_KEY = "123456"
@@ -78,3 +78,27 @@ class TestAPI(unittest.TestCase):
         token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
         response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "bbc"})
         mock_bbc_gatherer.return_value.get_news.assert_called_once()
+
+    @mock.patch('app.resources.get_news.BBCGatherer')
+    def test_FK_relationship_between_users_and_requests(self, mock_bbc_gatherer):
+        mock_bbc_gatherer.return_value.get_news.return_value = None
+        token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
+        for _ in range(3):
+            self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "bbc"})
+        requests = User.query.first().requests
+        self.assertEqual(len(requests), 3)
+        for request in requests:
+            with self.subTest(request=request):
+                self.assertIsInstance(request, NewsRequest)
+
+    @mock.patch('app.resources.get_news.BBCGatherer')
+    def test_FK_relationship_between_sources_and_requests(self, mock_bbc_gatherer):
+        mock_bbc_gatherer.return_value.get_news.return_value = None
+        token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
+        for _ in range(3):
+            self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "bbc"})
+        requests = NewsSource.query.first().requests
+        self.assertEqual(len(requests), 3)
+        for request in requests:
+            with self.subTest(request=request):
+                self.assertIsInstance(request, NewsRequest)
