@@ -11,7 +11,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), nullable=False)
-    password_hash = db.Column(db.String(64), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     token = db.Column(db.String(64))
     token_expiry = db.Column(db.DateTime)
 
