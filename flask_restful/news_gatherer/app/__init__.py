@@ -6,7 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 migrate = Migrate()
 
-from app.resources.news import GetNews, GetToken, Register
+from app.resources.authorization import GetToken, Register
+from app.resources.get_news import GetNews
 
 def create_app(config_object):
     app = Flask(__name__)
@@ -14,7 +15,7 @@ def create_app(config_object):
 
     db.init_app(app)
 
-    # Ensure FOREIGN KEY for sqlite3
+    # Enable FOREIGN KEY constraints for sqlite3
     if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
         def _fk_pragma_on_connect(dbapi_con, con_record):
             dbapi_con.execute('pragma foreign_keys=ON')
