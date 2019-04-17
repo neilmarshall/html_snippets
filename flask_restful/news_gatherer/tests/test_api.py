@@ -1,8 +1,9 @@
 from base64 import b64encode
 import unittest
+import unittest.mock as mock
 
 from app import create_app, db
-from app.resources.users import User
+from app.resources.users import NewsSource, User
 
 class TestConfig():
     SECRET_KEY = "123456"
@@ -22,7 +23,9 @@ class TestAPI(unittest.TestCase):
         db.create_all()
         user = User(username="test")
         user.set_password("test")
+        news_source = NewsSource(source_name="bbc")
         db.session.add(user)
+        db.session.add(news_source)
         db.session.commit()
 
     def tearDown(self):
@@ -56,3 +59,22 @@ class TestAPI(unittest.TestCase):
         response = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')})
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.json['token'])
+
+    def test_get_news_with_invalid_token_returns_401(self):
+        response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer invalid_token'}, json={"source": "bbc"})
+        self.assertEqual(response._status_code, 401)
+
+    @mock.patch('app.resources.get_news.BBCGatherer')
+    def test_get_news_with_valid_token_but_invalid_source_returns_400(self, mock_bbc_gatherer):
+        mock_bbc_gatherer.return_value.get_news.return_value = None
+        token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
+        response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "xxx"})
+        mock_bbc_gatherer.return_value.get_news.assert_not_called()
+        self.assertEqual(response._status_code, 400)
+
+    @mock.patch('app.resources.get_news.BBCGatherer')
+    def test_get_news_with_valid_token_and_source_calls_news_gatherer(self, mock_bbc_gatherer):
+        mock_bbc_gatherer.return_value.get_news.return_value = None
+        token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
+        response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "bbc"})
+        mock_bbc_gatherer.return_value.get_news.assert_called_once()
