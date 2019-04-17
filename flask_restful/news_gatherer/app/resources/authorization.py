@@ -6,7 +6,7 @@ from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from flask_restful import Resource
 
 from app import db
-from app.resources.users import User
+from app.resources.models import User
 
 httpauth = HTTPBasicAuth()
 tokenauth = HTTPTokenAuth()

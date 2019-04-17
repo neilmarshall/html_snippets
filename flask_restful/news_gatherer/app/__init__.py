@@ -7,7 +7,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 from app.resources.authorization import GetToken, Register
-from app.resources.get_news import GetNews
+from app.resources.routes import GetNews
 
 def create_app(config_object):
     app = Flask(__name__)

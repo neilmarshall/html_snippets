@@ -3,7 +3,7 @@ import unittest
 import unittest.mock as mock
 
 from app import create_app, db
-from app.resources.users import NewsRequest, NewsSource, User
+from app.resources.models import NewsRequest, NewsSource, User
 
 class TestConfig():
     SECRET_KEY = "123456"
@@ -64,7 +64,7 @@ class TestAPI(unittest.TestCase):
         response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer invalid_token'}, json={"source": "bbc"})
         self.assertEqual(response._status_code, 401)
 
-    @mock.patch('app.resources.get_news.BBCGatherer')
+    @mock.patch('app.resources.routes.BBCGatherer')
     def test_get_news_with_valid_token_but_invalid_source_returns_400(self, mock_bbc_gatherer):
         mock_bbc_gatherer.return_value.get_news.return_value = None
         token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
@@ -72,14 +72,14 @@ class TestAPI(unittest.TestCase):
         mock_bbc_gatherer.return_value.get_news.assert_not_called()
         self.assertEqual(response._status_code, 400)
 
-    @mock.patch('app.resources.get_news.BBCGatherer')
+    @mock.patch('app.resources.routes.BBCGatherer')
     def test_get_news_with_valid_token_and_source_calls_news_gatherer(self, mock_bbc_gatherer):
         mock_bbc_gatherer.return_value.get_news.return_value = None
         token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
         response = self.test_client.post('/get_news', headers={'Authorization': 'Bearer ' + token}, json={"source": "bbc"})
         mock_bbc_gatherer.return_value.get_news.assert_called_once()
 
-    @mock.patch('app.resources.get_news.BBCGatherer')
+    @mock.patch('app.resources.routes.BBCGatherer')
     def test_FK_relationship_between_users_and_requests(self, mock_bbc_gatherer):
         mock_bbc_gatherer.return_value.get_news.return_value = None
         token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']
@@ -91,7 +91,7 @@ class TestAPI(unittest.TestCase):
             with self.subTest(request=request):
                 self.assertIsInstance(request, NewsRequest)
 
-    @mock.patch('app.resources.get_news.BBCGatherer')
+    @mock.patch('app.resources.routes.BBCGatherer')
     def test_FK_relationship_between_sources_and_requests(self, mock_bbc_gatherer):
         mock_bbc_gatherer.return_value.get_news.return_value = None
         token = self.test_client.get('/token', headers={'Authorization': b'Basic ' + b64encode(b'test:test')}).json['token']

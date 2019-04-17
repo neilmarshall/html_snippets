@@ -9,7 +9,7 @@ from flask_restful import Resource, reqparse
 import requests
 
 from app import db
-from app.resources.users import NewsRequest, NewsSource
+from app.resources.models import NewsRequest, NewsSource
 from app.resources.authorization import tokenauth
 
 class NewsGatherer(ABC):
