@@ -55,16 +55,31 @@ class MetroGatherer(NewsGatherer):
             return make_response(jsonify({"message": "could not parse page"}), 500)
 
 
+class TimesGatherer(NewsGatherer):
+
+    def get_news(self):
+        response = requests.get(r'https://www.thetimes.co.uk/')
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            articles = soup.find(class_='InTheNews').find_all('p')
+            return make_response(jsonify({'articles': [article.text.strip() for article in articles]}), 201)
+        else:
+            return make_response(jsonify({"message": "could not parse page"}), 500)
+
+
 class GetNews(Resource):
     @tokenauth.login_required
     def post(self):
         user = g.get('current_user')
         parser = reqparse.RequestParser()
-        parser.add_argument('source', choices=['bbc', 'guardian', 'metro'], case_sensitive=False)
+        parser.add_argument('source', choices=['bbc', 'guardian', 'metro', 'times'], case_sensitive=False)
         args = parser.parse_args()
         news_source = NewsSource.query.filter(NewsSource.source_name.like(args['source'])).first_or_404()
         news_request = NewsRequest(user_id=user.id, news_source=news_source.source_id, request_date=datetime.now())
         db.session.add(news_request)
         db.session.commit()
-        news_gatherer = {'bbc': BBCGatherer(), 'guardian': GuardianGatherer(), 'metro': MetroGatherer()}.get(args['source'])
+        news_gatherer = {'bbc': BBCGatherer(),
+                         'guardian': GuardianGatherer(),
+                         'metro': MetroGatherer(),
+                         'times': TimesGatherer()}.get(args['source'])
         return news_gatherer.get_news()
