@@ -60,7 +60,7 @@ class GetNews(Resource):
     def post(self):
         user = g.get('current_user')
         parser = reqparse.RequestParser()
-        parser.add_argument('source', choices=['bbc', 'guardian', 'metro'])
+        parser.add_argument('source', choices=['bbc', 'guardian', 'metro'], case_sensitive=False)
         args = parser.parse_args()
         news_source = NewsSource.query.filter(NewsSource.source_name.like(args['source'])).first_or_404()
         news_request = NewsRequest(user_id=user.id, news_source=news_source.source_id, request_date=datetime.now())
