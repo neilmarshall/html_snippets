@@ -1,0 +1,33 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Knockout - Hello, World!</title>
+  <script src="scripts\plugins\knockout-3.5.0.js"></script>
+  <script src="scripts\script.js"></script>
+
+</head>
+
+<body onload="main()">
+  <p>Hello, world!</p>
+  <p>First name: <strong data-bind="text: firstName"></strong></p>
+  <p>Last name: <strong data-bind="text: lastName"></strong></p>
+  <p>Full name: <strong data-bind="text: fullName"></strong></p>
+
+  <p>First name: <input style="background-color: yellow" data-bind="value: firstName" /></p>
+  <p>Last name: <input style="background-color: yellow" data-bind="value: lastName" /></p>
+
+  <button data-bind="click: capitalizeLastName">Capitalize last name</button>
+  <button onclick="window.location.reload(true);">Refresh page</button>
+  <button data-bind="click: randomiseName">Set name to random value</button>
+
+  <br>
+
+  <button data-bind="click: intPush">Add number</button>
+  <input data-bind="value: intToAdd" />
+  <select data-bind="options: intArray"></select>
+  <p>Total: <span data-bind="text: intArrayTotal"></span></p>
+</body>
+</html>
