@@ -10,7 +10,7 @@ def get_factors(n):
     if n <= 0:
         abort(400, "argument must be a positive integer")
     if n == 1:
-        return {'factors': [1]}
+        return {'response': [1]}
     factors = []
     for p in range(2, int(n**0.5) + 1):
         while n % p == 0:
@@ -18,7 +18,7 @@ def get_factors(n):
             n /= p
     if n != 1:
         factors.append(n)
-    return {'factors': factors}
+    return {'response': factors}
 
 @app.route('/api/is-prime/<int:n>')
 def is_prime(n):
@@ -31,3 +31,14 @@ def is_prime(n):
             return {'response': False}
     else:
         return {'response': True}
+
+@app.route('/api/get-primes/<int:n>')
+def get_primes(n):
+    if n <= 0:
+        abort(400, "argument must be a positive integer")
+    flags = [False, False] + [True for _ in range(2, n + 1)]
+    for p in range(2, n // 2 + 1):
+        for q in range(2, n // p + 1):
+            flags[p * q] = False
+    primes = [prime for prime, flag in enumerate(flags) if flag]
+    return {'response': primes}

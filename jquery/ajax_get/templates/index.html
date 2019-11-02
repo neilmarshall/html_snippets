@@ -2,25 +2,26 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href={{ url_for('static', filename='styles.css') }}>
+    <link href="https://fonts.googleapis.com/css?family=Muli|Roboto&display=swap" rel="stylesheet">
     <script src={{ url_for('static', filename='jquery-3.4.1.js') }}></script>
     <script src={{ url_for('static', filename='knockout-3.5.0.debug.js') }}></script>
     <script src={{ url_for('static', filename='script.js') }}></script>
+    <script src="https://kit.fontawesome.com/5670273720.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div>
         <h1>Prime Checker</h1>
         <label class="ml-4">Number: </label>
         <input data-bind="textInput: numberToCheckInput" />
+        <button class="btn btn-sm btn-primary" data-observable="numberToCheckInput">Clear Input <i class="fas fa-redo"></i></button>
         <!-- ko if: numberToCheckInput -->
-        <!-- ko with: numberToCheckOutput -->
-        <div class="ml-4">
+        <div class="ml-4" data-bind="with: numberToCheckOutput">
             <span data-bind="text: numberToCheckInput"></span>
             is 
             <span data-bind="hidden: response"><strong>not </strong></span>
             prime
         </div>
-        <!-- /ko -->
         <!-- /ko -->
     </div>
 
@@ -28,19 +29,30 @@
         <h1>Prime Factorizer</h1>
         <label class="ml-4">Number: </label>
         <input data-bind="textInput: numberToFactoriseInput" />
-        <div col=3>
-        <!-- ko if: numberToFactoriseInput -->
-        <div data-bind="template: {name: 'factors-template', data: numberToFactoriseOutput}"></div>
-        <!-- /ko -->
+        <button class="btn btn-sm btn-primary" data-observable="numberToFactoriseInput">Clear Input <i class="fas fa-redo"></i></button>
+        <div data-bind="if: numberToFactoriseInput">
+            <!-- ko template: {name: 'response-template', data: numberToFactoriseOutput} --><!-- /ko -->
         </div>
     </div>
 
-    <script type="text/html" id="factors-template">
+    <div>
+        <h1>Prime Generator</h1>
+        <label class="ml-4">Number: </label>
+        <input data-bind="textInput: primeGeneratorLimit" />
+        <button class="btn btn-sm btn-primary" data-observable="primeGeneratorLimit">Clear Input <i class="fas fa-redo"></i></button>
+        <div data-bind="if: primeGeneratorLimit">
+            <!-- ko template: {name: 'response-template', data: generatedPrimes} --><!-- /ko -->
+        </div>
+    </div>
+
+    <script type="text/html" id="response-template">
         <table class="table table-sm table-bordered col-3 ml-4">
             <thead class="thead-dark"><th>Factors</th></thead>
-            <tbody data-bind="foreach: factors">
+            <!-- ko if: $data -->
+            <tbody data-bind="foreach: response">
                 <tr><td data-bind="text: $data"></td></tr>
             </tbody>
+            <!-- /ko -->
         </table>
     </script>
 </body>
