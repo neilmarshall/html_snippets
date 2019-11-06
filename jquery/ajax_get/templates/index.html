@@ -10,38 +10,40 @@
     <script src="https://kit.fontawesome.com/5670273720.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div>
-        <h1>Prime Checker</h1>
-        <label class="ml-4">Number: </label>
-        <input data-bind="textInput: numberToCheckInput" />
-        <button class="btn btn-sm btn-primary" data-observable="numberToCheckInput">Clear Input <i class="fas fa-redo"></i></button>
-        <!-- ko if: numberToCheckInput -->
-        <div class="ml-4" data-bind="with: numberToCheckOutput">
-            <span data-bind="text: numberToCheckInput"></span>
-            is 
-            <span data-bind="hidden: response"><strong>not </strong></span>
-            prime
+    <div class="container">
+        <div>
+            <h1>Prime Checker</h1>
+            <label class="ml-4">Number: </label>
+            <input data-bind="textInput: numberToCheckInput" />
+            <button class="btn btn-sm btn-primary" data-observable="numberToCheckInput">Clear Input <i class="fas fa-redo"></i></button>
+            <!-- ko if: numberToCheckInput -->
+            <div class="ml-4" data-bind="with: numberToCheckOutput">
+                <span data-bind="text: numberToCheckInput"></span>
+                is 
+                <span data-bind="hidden: response"><strong>not </strong></span>
+                prime
+            </div>
+            <!-- /ko -->
         </div>
-        <!-- /ko -->
-    </div>
 
-    <div>
-        <h1>Prime Factorizer</h1>
-        <label class="ml-4">Number: </label>
-        <input data-bind="textInput: numberToFactoriseInput" />
-        <button class="btn btn-sm btn-primary" data-observable="numberToFactoriseInput">Clear Input <i class="fas fa-redo"></i></button>
-        <div data-bind="if: numberToFactoriseInput">
-            <!-- ko template: {name: 'response-template', data: numberToFactoriseOutput} --><!-- /ko -->
+        <div>
+            <h1>Prime Factorizer</h1>
+            <label class="ml-4">Number: </label>
+            <input data-bind="textInput: numberToFactoriseInput" />
+            <button class="btn btn-sm btn-primary" data-observable="numberToFactoriseInput">Clear Input <i class="fas fa-redo"></i></button>
+            <div data-bind="if: numberToFactoriseInput">
+                <!-- ko template: {name: 'response-template', data: numberToFactoriseOutput} --><!-- /ko -->
+            </div>
         </div>
-    </div>
 
-    <div>
-        <h1>Prime Generator</h1>
-        <label class="ml-4">Number: </label>
-        <input data-bind="textInput: primeGeneratorLimit" />
-        <button class="btn btn-sm btn-primary" data-observable="primeGeneratorLimit">Clear Input <i class="fas fa-redo"></i></button>
-        <div data-bind="if: primeGeneratorLimit">
-            <!-- ko template: {name: 'response-template', data: generatedPrimes} --><!-- /ko -->
+        <div>
+            <h1>Prime Generator</h1>
+            <label class="ml-4">Number: </label>
+            <input data-bind="textInput: primeGeneratorLimit" />
+            <button class="btn btn-sm btn-primary" data-observable="primeGeneratorLimit">Clear Input <i class="fas fa-redo"></i></button>
+            <div data-bind="if: primeGeneratorLimit">
+                <!-- ko template: {name: 'response-template', data: generatedPrimes} --><!-- /ko -->
+            </div>
         </div>
     </div>
 
