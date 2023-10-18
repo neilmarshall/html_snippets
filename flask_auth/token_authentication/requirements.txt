@@ -10,7 +10,7 @@ Flask==2.2.5
 Flask-HTTPAuth==3.2.4
 Flask-RESTful==0.3.7
 idna==2.8
-ipython==7.16.3
+ipython==8.10.0
 ipython-genutils==0.2.0
 itsdangerous==1.1.0
 jedi==0.13.3
